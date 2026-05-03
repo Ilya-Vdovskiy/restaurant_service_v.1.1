@@ -1,0 +1,32 @@
+# Flutter
+.dart_tool/
+.pub/
+.pub-cache/
+build/
+*.lock
+*.iml
+*.swp
+.DS_Store
+
+# Android
+**/android/local.properties
+**/android/**/build/
+**/android/.gradle/
+**/android/app/build/
+
+# iOS
+**/ios/Pods/
+**/ios/Podfile.lock
+**/ios/Flutter/App.framework/
+**/ios/Flutter/Flutter.framework/
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/ephemeral/
+**/ios/.symlinks/
+
+# Web
+**/web/
+
+# APK/IPA
+*.apk
+*.ipa
+*.aab

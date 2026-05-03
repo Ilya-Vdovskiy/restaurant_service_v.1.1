@@ -1,1 +1,0 @@
- C:\\Users\\ilya0\\OneDrive\\Desktop\\3\ курс\\Цимбалюк\\Курсач\\mobile_flutter_app\\.dart_tool\\flutter_build\\1e84e04cccc02280e1145033bf3b03fd\\native_assets.json: 
