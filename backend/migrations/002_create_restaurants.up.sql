@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS restaurants (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL,
     address     TEXT,
     phone       VARCHAR(50),
@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS restaurants (
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_restaurant_name ON restaurant(name);
-CREATE INDEX IF NOT EXISTS idx_restaurant_is_active ON restaurant(is_active);
+CREATE INDEX IF NOT EXISTS idx_restaurant_name ON restaurants(name);
+CREATE INDEX IF NOT EXISTS idx_restaurant_is_active ON restaurants(is_active);
 
 -- Триггер обновления даты
 CREATE OR REPLACE FUNCTION update_updated_at_column()

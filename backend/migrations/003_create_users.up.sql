@@ -9,10 +9,9 @@ END$$;
 CREATE TABLE IF NOT EXISTS users (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     restaurant_id   UUID NOT NULL,
-    subdivision_id  UUID NOT,
-    email           VARCHAR(255),
+    subdivision_id  UUID,
+    email VARCHAR(255) NOT NULL,
     phone           VARCHAR(50),
-    password_hash   VARCHAR(255) NOT NULL,
     role            user_role NOT NULL DEFAULT 'employee',
     last_name       VARCHAR(255) NOT NULL,
     first_name      VARCHAR(255) NOT NULL,
@@ -25,11 +24,11 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_user_restaurant_id ON user(restaurant_id);
-CREATE INDEX IF NOT EXISTS idx_user_full_name ON user(last_name, first_name);
-CREATE INDEX IF NOT EXISTS idx_user_role ON user(role);
-CREATE INDEX IF NOT EXISTS idx_user_subdivision_id ON user(subdivision_id);
-CREATE INDEX IF NOT EXISTS idx_user_position ON user(position);
+CREATE INDEX IF NOT EXISTS idx_user_restaurant_id ON users(restaurant_id);
+CREATE INDEX IF NOT EXISTS idx_user_full_name ON users(last_name, first_name);
+CREATE INDEX IF NOT EXISTS idx_user_role ON users(role);
+CREATE INDEX IF NOT EXISTS idx_user_subdivision_id ON users(subdivision_id);
+CREATE INDEX IF NOT EXISTS idx_user_position ON users(position);
 
 DO $$
 BEGIN
