@@ -58,3 +58,37 @@ func (r *RestaurantRepository) List(ctx context.Context) ([]models.Restaurant, e
 
 	return restaurants, nil
 }
+
+func (r *RestaurantRepository) Create(ctx context.Context, restaurant models.Restaurant) (models.Restaurant, error) {
+	const query = `
+		INSERT INTO restaurants (name, address, phone, logo_url)
+		VALUES ($1, $2, $3, $4)
+		RETURNING id, name, address, phone, logo_url, is_active, created_at, updated_at
+	`
+
+	var created models.Restaurant
+
+	err := r.db.QueryRow(
+		ctx,
+		query,
+		restaurant.Name,
+		restaurant.Address,
+		restaurant.Phone,
+		restaurant.LogoURL,
+	).Scan(
+		&created.ID,
+		&created.Name,
+		&created.Address,
+		&created.Phone,
+		&created.LogoURL,
+		&created.IsActive,
+		&created.CreatedAt,
+		&created.UpdatedAt,
+	)
+
+	if err != nil {
+		return models.Restaurant{}, fmt.Errorf("create restaurant: %w", err)
+	}
+
+	return created, nil
+}

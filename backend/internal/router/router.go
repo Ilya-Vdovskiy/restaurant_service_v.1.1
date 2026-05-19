@@ -22,6 +22,7 @@ func New(db *pgxpool.Pool) http.Handler {
 	restaurantService := service.NewRestaurantService(restaurantRepo)
 	restaurantHandler := handler.NewRestaurantHandler(restaurantService)
 	mux.HandleFunc("GET /restaurants", restaurantHandler.List)
+	mux.HandleFunc("POST /restaurants", restaurantHandler.Create)
 
 	return mux
 }

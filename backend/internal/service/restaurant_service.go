@@ -18,3 +18,7 @@ func NewRestaurantService(repo *repository.RestaurantRepository) *RestaurantServ
 func (s *RestaurantService) List(ctx context.Context) ([]models.Restaurant, error) {
 	return s.repo.List(ctx)
 }
+
+func (s *RestaurantService) Create(ctx context.Context, restaurant models.Restaurant) (models.Restaurant, error) {
+	return s.repo.Create(ctx, restaurant)
+}

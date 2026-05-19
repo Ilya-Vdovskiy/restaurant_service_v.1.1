@@ -2,10 +2,13 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"log/slog"
 	"net/http"
+	"strings"
 	"time"
 
+	"github.com/Ilya-Vdovskiy/restaurant_service_v.1.1/internal/models"
 	"github.com/Ilya-Vdovskiy/restaurant_service_v.1.1/internal/service"
 )
 
@@ -34,4 +37,63 @@ func (h *RestaurantHandler) List(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{
 		"items": restaurants,
 	})
+}
+
+type createRestaurantRequest struct {
+	Name    string  `json:"name"`
+	Address *string `json:"address"`
+	Phone   *string `json:"phone"`
+	LogoURL *string `json:"logo_url"`
+}
+
+func (h *RestaurantHandler) Create(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+
+	var req createRestaurantRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{
+			"error": "invalid json body",
+		})
+		return
+	}
+
+	req.Name = strings.TrimSpace(req.Name)
+	if req.Name == "" {
+		writeJSON(w, http.StatusBadRequest, map[string]string{
+			"error": "name is required",
+		})
+		return
+	}
+
+	restaurant := models.Restaurant{
+		Name:    req.Name,
+		Address: cleanOptionalString(req.Address),
+		Phone:   cleanOptionalString(req.Phone),
+		LogoURL: cleanOptionalString(req.LogoURL),
+	}
+
+	created, err := h.service.Create(ctx, restaurant)
+	if err != nil {
+		slog.Error("failed to list restaurants", "error", err)
+		writeJSON(w, http.StatusInternalServerError, map[string]string{
+			"error": "failed to list restaurants",
+		})
+		return
+	}
+
+	writeJSON(w, http.StatusCreated, created)
+}
+
+func cleanOptionalString(value *string) *string {
+	if value == nil {
+		return nil
+	}
+
+	cleaned := strings.TrimSpace(*value)
+	if cleaned == "" {
+		return nil
+	}
+
+	return &cleaned
 }
