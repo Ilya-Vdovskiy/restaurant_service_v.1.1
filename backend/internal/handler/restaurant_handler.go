@@ -130,3 +130,63 @@ func (h *RestaurantHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 
 	writeJSON(w, http.StatusOK, restaurant)
 }
+
+type updateRestaurantRequest struct {
+	Name    *string `json:"name"`
+	Address *string `json:"address"`
+	Phone   *string `json:"phone"`
+	LogoURL *string `json:"logo_url"`
+}
+
+func (h *RestaurantHandler) Update(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+
+	id := r.PathValue("id")
+	if strings.TrimSpace(id) == "" {
+		writeJSON(w, http.StatusBadRequest, map[string]string{
+			"error": "restaurant id is required",
+		})
+		return
+	}
+
+	var req updateRestaurantRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{
+			"error": "invalid JSON body",
+		})
+		return
+	}
+
+	update := models.RestaurantUpdate{
+		Name:    cleanOptionalString(req.Name),
+		Address: cleanOptionalString(req.Address),
+		Phone:   cleanOptionalString(req.Phone),
+		LogoURL: cleanOptionalString(req.LogoURL),
+	}
+
+	if update.Name == nil && update.Address == nil && update.Phone == nil && update.LogoURL == nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{
+			"error": "at least one field is required",
+		})
+		return
+	}
+
+	restaurant, err := h.service.Update(ctx, id, update)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			writeJSON(w, http.StatusNotFound, map[string]string{
+				"error": "restaurant not found",
+			})
+			return
+		}
+
+		slog.Error("failed to update restaurant", "id", id, "error", err)
+		writeJSON(w, http.StatusInternalServerError, map[string]string{
+			"error": "failed to update restaurant",
+		})
+		return
+	}
+
+	writeJSON(w, http.StatusOK, restaurant)
+}

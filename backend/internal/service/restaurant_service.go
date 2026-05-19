@@ -26,3 +26,7 @@ func (s *RestaurantService) Create(ctx context.Context, restaurant models.Restau
 func (s *RestaurantService) GetByID(ctx context.Context, id string) (models.Restaurant, error) {
 	return s.repo.GetByID(ctx, id)
 }
+
+func (s *RestaurantService) Update(ctx context.Context, id string, update models.RestaurantUpdate) (models.Restaurant, error) {
+	return s.repo.Update(ctx, id, update)
+}

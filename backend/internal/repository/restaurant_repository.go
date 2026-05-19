@@ -125,3 +125,38 @@ func (r *RestaurantRepository) GetByID(ctx context.Context, id string) (models.R
 
 	return restaurantByID, nil
 }
+
+func (r *RestaurantRepository) Update(ctx context.Context, id string, update models.RestaurantUpdate) (models.Restaurant, error) {
+	const query = `
+		UPDATE restaurants
+		SET
+			name = COALESCE($2, name),
+			address = COALESCE($3, address),
+			phone = COALESCE($4, phone),
+			logo_url = COALESCE($5, logo_url)
+		WHERE id = $1
+		RETURNING id, name, address, phone, logo_url, is_active, created_at, updated_at
+	`
+
+	var updateRestaurant models.Restaurant
+	err := r.db.QueryRow(ctx, query, id, update.Name, update.Address, update.Phone, update.LogoURL).Scan(
+		&updateRestaurant.ID,
+		&updateRestaurant.Name,
+		&updateRestaurant.Address,
+		&updateRestaurant.Phone,
+		&updateRestaurant.LogoURL,
+		&updateRestaurant.IsActive,
+		&updateRestaurant.CreatedAt,
+		&updateRestaurant.UpdatedAt,
+	)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return models.Restaurant{}, pgx.ErrNoRows
+		}
+
+		return models.Restaurant{}, fmt.Errorf("update restaurant by id: %w", err)
+	}
+
+	return updateRestaurant, nil
+}
