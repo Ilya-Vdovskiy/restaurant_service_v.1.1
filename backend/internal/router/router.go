@@ -25,6 +25,7 @@ func New(db *pgxpool.Pool) http.Handler {
 	mux.HandleFunc("POST /restaurants", restaurantHandler.Create)
 	mux.HandleFunc("GET /restaurants/{id}", restaurantHandler.GetByID)
 	mux.HandleFunc("PATCH /restaurants/{id}", restaurantHandler.Update)
+	mux.HandleFunc("DELETE /restaurants/{id}", restaurantHandler.Deactivate)
 
 	return mux
 }

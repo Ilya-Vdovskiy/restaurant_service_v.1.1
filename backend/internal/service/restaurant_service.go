@@ -30,3 +30,7 @@ func (s *RestaurantService) GetByID(ctx context.Context, id string) (models.Rest
 func (s *RestaurantService) Update(ctx context.Context, id string, update models.RestaurantUpdate) (models.Restaurant, error) {
 	return s.repo.Update(ctx, id, update)
 }
+
+func (s *RestaurantService) Deactivate(ctx context.Context, id string) (models.Restaurant, error) {
+	return s.repo.Deactivate(ctx, id)
+}

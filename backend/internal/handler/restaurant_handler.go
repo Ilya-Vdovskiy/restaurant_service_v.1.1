@@ -190,3 +190,34 @@ func (h *RestaurantHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	writeJSON(w, http.StatusOK, restaurant)
 }
+
+func (h *RestaurantHandler) Deactivate(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+
+	id := r.PathValue("id")
+	if strings.TrimSpace(id) == "" {
+		writeJSON(w, http.StatusBadRequest, map[string]string{
+			"error": "restaurant id is required",
+		})
+		return
+	}
+
+	restaurant, err := h.service.Deactivate(ctx, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			writeJSON(w, http.StatusNotFound, map[string]string{
+				"error": "restaurant not found",
+			})
+			return
+		}
+
+		slog.Error("failed to deactivate restaurant by id", "id", id, "error", err)
+		writeJSON(w, http.StatusInternalServerError, map[string]string{
+			"error": "failed to deactivate restaurant",
+		})
+		return
+	}
+
+	writeJSON(w, http.StatusOK, restaurant)
+}

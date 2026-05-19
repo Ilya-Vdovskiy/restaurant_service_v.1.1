@@ -160,3 +160,33 @@ func (r *RestaurantRepository) Update(ctx context.Context, id string, update mod
 
 	return updateRestaurant, nil
 }
+
+func (r *RestaurantRepository) Deactivate(ctx context.Context, id string) (models.Restaurant, error) {
+	const query = `
+		UPDATE restaurants
+		SET is_active = false
+		WHERE id = $1
+		RETURNING id, name, address, phone, logo_url, is_active, created_at, updated_at
+	`
+	var restaurant models.Restaurant
+	err := r.db.QueryRow(ctx, query, id).Scan(
+		&restaurant.ID,
+		&restaurant.Name,
+		&restaurant.Address,
+		&restaurant.Phone,
+		&restaurant.LogoURL,
+		&restaurant.IsActive,
+		&restaurant.CreatedAt,
+		&restaurant.UpdatedAt,
+	)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return models.Restaurant{}, pgx.ErrNoRows
+		}
+
+		return models.Restaurant{}, fmt.Errorf("deactivate restaurant by id: %w", err)
+	}
+
+	return restaurant, nil
+}
