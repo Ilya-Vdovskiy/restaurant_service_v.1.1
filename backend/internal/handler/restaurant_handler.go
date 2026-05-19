@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"log/slog"
 	"net/http"
 	"strings"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/Ilya-Vdovskiy/restaurant_service_v.1.1/internal/models"
 	"github.com/Ilya-Vdovskiy/restaurant_service_v.1.1/internal/service"
+	"github.com/jackc/pgx/v5"
 )
 
 type RestaurantHandler struct {
@@ -96,4 +98,35 @@ func cleanOptionalString(value *string) *string {
 	}
 
 	return &cleaned
+}
+
+func (h *RestaurantHandler) GetByID(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+
+	id := r.PathValue("id")
+	if strings.TrimSpace(id) == "" {
+		writeJSON(w, http.StatusBadRequest, map[string]string{
+			"error": "restaurant id is required",
+		})
+		return
+	}
+
+	restaurant, err := h.service.GetByID(ctx, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			writeJSON(w, http.StatusNotFound, map[string]string{
+				"error": "restaurant not found",
+			})
+			return
+		}
+
+		slog.Error("failed to get restaurant by id", "id", id, "error", err)
+		writeJSON(w, http.StatusInternalServerError, map[string]string{
+			"error": "failed to get restaurant",
+		})
+		return
+	}
+
+	writeJSON(w, http.StatusOK, restaurant)
 }

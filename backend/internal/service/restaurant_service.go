@@ -22,3 +22,7 @@ func (s *RestaurantService) List(ctx context.Context) ([]models.Restaurant, erro
 func (s *RestaurantService) Create(ctx context.Context, restaurant models.Restaurant) (models.Restaurant, error) {
 	return s.repo.Create(ctx, restaurant)
 }
+
+func (s *RestaurantService) GetByID(ctx context.Context, id string) (models.Restaurant, error) {
+	return s.repo.GetByID(ctx, id)
+}

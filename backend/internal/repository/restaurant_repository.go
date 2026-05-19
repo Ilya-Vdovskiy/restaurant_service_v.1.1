@@ -2,9 +2,11 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/Ilya-Vdovskiy/restaurant_service_v.1.1/internal/models"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -91,4 +93,35 @@ func (r *RestaurantRepository) Create(ctx context.Context, restaurant models.Res
 	}
 
 	return created, nil
+}
+
+func (r *RestaurantRepository) GetByID(ctx context.Context, id string) (models.Restaurant, error) {
+	const query = `
+		SELECT id, name, address, phone, logo_url, is_active, created_at, updated_at
+		FROM restaurants
+		WHERE id = $1 
+	`
+
+	var restaurantByID models.Restaurant
+
+	err := r.db.QueryRow(ctx, query, id).Scan(
+		&restaurantByID.ID,
+		&restaurantByID.Name,
+		&restaurantByID.Address,
+		&restaurantByID.Phone,
+		&restaurantByID.LogoURL,
+		&restaurantByID.IsActive,
+		&restaurantByID.CreatedAt,
+		&restaurantByID.UpdatedAt,
+	)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return models.Restaurant{}, pgx.ErrNoRows
+		}
+
+		return models.Restaurant{}, fmt.Errorf("get restaurant by id: %w", err)
+	}
+
+	return restaurantByID, nil
 }

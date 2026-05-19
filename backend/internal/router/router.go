@@ -23,6 +23,7 @@ func New(db *pgxpool.Pool) http.Handler {
 	restaurantHandler := handler.NewRestaurantHandler(restaurantService)
 	mux.HandleFunc("GET /restaurants", restaurantHandler.List)
 	mux.HandleFunc("POST /restaurants", restaurantHandler.Create)
+	mux.HandleFunc("GET /restaurants/{id}", restaurantHandler.GetByID)
 
 	return mux
 }
