@@ -58,3 +58,34 @@ func (r *SubdivisionRepository) List(ctx context.Context) ([]models.Subdivision,
 
 	return subdivisions, err
 }
+
+func (r *SubdivisionRepository) Create(ctx context.Context, subdivision models.Subdivision) (models.Subdivision, error) {
+	const query = `
+		INSERT INTO subdivisions (name, description)
+		VALUES ($1, $2)
+		RETURNING id, restaurant_id, name, description, is_active, created_at, updated_at
+	`
+
+	var created models.Subdivision
+
+	err := r.db.QueryRow(
+		ctx,
+		query,
+		subdivision.Name,
+		subdivision.Description,
+	).Scan(
+		&subdivision.ID,
+		&subdivision.RestaurantId,
+		&subdivision.Name,
+		&subdivision.Description,
+		&subdivision.IsActive,
+		&subdivision.CreatedAt,
+		&subdivision.UpdatedAt,
+	)
+
+	if err != nil {
+		return models.Subdivision{}, fmt.Errorf("create subdivision: %w", err)
+	}
+
+	return created, nil
+}

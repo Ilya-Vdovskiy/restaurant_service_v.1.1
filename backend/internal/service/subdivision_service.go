@@ -18,3 +18,7 @@ func NewSubdivisionService(repo *repository.SubdivisionRepository) *SubdivisionS
 func (s *SubdivisionService) List(ctx context.Context) ([]models.Subdivision, error) {
 	return s.repo.List(ctx)
 }
+
+func (s *SubdivisionService) Create(ctx context.Context, subdivision models.Subdivision) (models.Subdivision, error) {
+	return s.repo.Create(ctx, subdivision)
+}
