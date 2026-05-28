@@ -34,3 +34,7 @@ func (s *RestaurantService) Update(ctx context.Context, id string, update models
 func (s *RestaurantService) Deactivate(ctx context.Context, id string) (models.Restaurant, error) {
 	return s.repo.Deactivate(ctx, id)
 }
+
+func (s *RestaurantService) Activate(ctx context.Context, id string) (models.Restaurant, error) {
+	return s.repo.Activate(ctx, id)
+}

@@ -26,6 +26,12 @@ func New(db *pgxpool.Pool) http.Handler {
 	mux.HandleFunc("GET /restaurants/{id}", restaurantHandler.GetByID)
 	mux.HandleFunc("PATCH /restaurants/{id}", restaurantHandler.Update)
 	mux.HandleFunc("DELETE /restaurants/{id}", restaurantHandler.Deactivate)
+	mux.HandleFunc("DELETE /restaurants/{id}/activate", restaurantHandler.Activate)
+
+	subdivisionRepo := repository.NewSubdivisionRepository(db)
+	subdivisionService := service.NewSubdivisionService(subdivisionRepo)
+	subdivisionHandler := handler.NewSubdivisionHandler(subdivisionService)
+	mux.HandleFunc("GET /subdivisions", subdivisionHandler.List)
 
 	return mux
 }
