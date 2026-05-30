@@ -77,9 +77,9 @@ func (h *RestaurantHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	created, err := h.service.Create(ctx, restaurant)
 	if err != nil {
-		slog.Error("failed to list restaurants", "error", err)
+		slog.Error("failed to create restaurant", "error", err)
 		writeJSON(w, http.StatusInternalServerError, map[string]string{
-			"error": "failed to list restaurants",
+			"error": "failed to create restaurant",
 		})
 		return
 	}

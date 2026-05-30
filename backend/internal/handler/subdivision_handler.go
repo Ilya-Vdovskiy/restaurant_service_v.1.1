@@ -16,15 +16,23 @@ type SubdivisionHandler struct {
 	service *service.SubdivisionService
 }
 
-func NewSubdivisionHandler(servise *service.SubdivisionService) *SubdivisionHandler {
-	return &SubdivisionHandler{service: servise}
+func NewSubdivisionHandler(service *service.SubdivisionService) *SubdivisionHandler {
+	return &SubdivisionHandler{service: service}
 }
 
-func (h *SubdivisionHandler) List(w http.ResponseWriter, r *http.Request) {
+func (h *SubdivisionHandler) ListByRestaurantID(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
 
-	subdivisions, err := h.service.List(ctx)
+	restaurantID := strings.TrimSpace(r.PathValue("restaurant_id"))
+	if restaurantID == "" {
+		writeJSON(w, http.StatusBadRequest, map[string]string{
+			"error": "restaurant id is required",
+		})
+		return
+	}
+
+	subdivisions, err := h.service.ListByRestaurantID(ctx, restaurantID)
 
 	if err != nil {
 		slog.Error("failed to list subdivisions", "error", err)
@@ -40,8 +48,8 @@ func (h *SubdivisionHandler) List(w http.ResponseWriter, r *http.Request) {
 }
 
 type createSubdivisionRequest struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	Name        string  `json:"name"`
+	Description *string `json:"description"`
 }
 
 func (h *SubdivisionHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -49,6 +57,14 @@ func (h *SubdivisionHandler) Create(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 
 	var req createSubdivisionRequest
+
+	restaurantID := strings.TrimSpace(r.PathValue("restaurant_id"))
+	if restaurantID == "" {
+		writeJSON(w, http.StatusBadRequest, map[string]string{
+			"error": "restaurant id is required",
+		})
+		return
+	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]string{
@@ -66,15 +82,16 @@ func (h *SubdivisionHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	subdivision := models.Subdivision{
-		Name:        req.Name,
-		Description: cleanOptionalString(&req.Description),
+		RestaurantID: restaurantID,
+		Name:         req.Name,
+		Description:  cleanOptionalString(req.Description),
 	}
 
 	created, err := h.service.Create(ctx, subdivision)
 	if err != nil {
-		slog.Error("failed to list subdivision", "error", err)
+		slog.Error("failed to create subdivision", "error", err)
 		writeJSON(w, http.StatusInternalServerError, map[string]string{
-			"error": "failed to list subdivision",
+			"error": "failed to create subdivision",
 		})
 		return
 	}

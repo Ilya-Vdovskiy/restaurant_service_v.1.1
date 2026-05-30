@@ -31,8 +31,8 @@ func New(db *pgxpool.Pool) http.Handler {
 	subdivisionRepo := repository.NewSubdivisionRepository(db)
 	subdivisionService := service.NewSubdivisionService(subdivisionRepo)
 	subdivisionHandler := handler.NewSubdivisionHandler(subdivisionService)
-	mux.HandleFunc("GET /subdivisions", subdivisionHandler.List)
-	mux.HandleFunc("POST /subdivisions", subdivisionHandler.Create)
+	mux.HandleFunc("GET /restaurants/{restaurant_id}/subdivisions", subdivisionHandler.ListByRestaurantID)
+	mux.HandleFunc("POST /restaurants/{restaurant_id}/subdivisions", subdivisionHandler.Create)
 
 	return mux
 }

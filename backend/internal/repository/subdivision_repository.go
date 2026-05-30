@@ -16,14 +16,15 @@ func NewSubdivisionRepository(db *pgxpool.Pool) *SubdivisionRepository {
 	return &SubdivisionRepository{db: db}
 }
 
-func (r *SubdivisionRepository) List(ctx context.Context) ([]models.Subdivision, error) {
+func (r *SubdivisionRepository) ListByRestaurantID(ctx context.Context, restaurantID string) ([]models.Subdivision, error) {
 	const query = `
 		SELECT id, restaurant_id, name, description, is_active, created_at, updated_at
 		FROM subdivisions
+		WHERE restaurant_id = $1
 		ORDER BY created_at DESC
 	`
 
-	rows, err := r.db.Query(ctx, query)
+	rows, err := r.db.Query(ctx, query, restaurantID)
 
 	if err != nil {
 		return nil, fmt.Errorf("query subdivision: %w", err)
@@ -37,7 +38,7 @@ func (r *SubdivisionRepository) List(ctx context.Context) ([]models.Subdivision,
 
 		err := rows.Scan(
 			&subdivision.ID,
-			&subdivision.RestaurantId,
+			&subdivision.RestaurantID,
 			&subdivision.Name,
 			&subdivision.Description,
 			&subdivision.IsActive,
@@ -56,13 +57,13 @@ func (r *SubdivisionRepository) List(ctx context.Context) ([]models.Subdivision,
 		return nil, fmt.Errorf("iterate subdivisions: %w", err)
 	}
 
-	return subdivisions, err
+	return subdivisions, nil
 }
 
 func (r *SubdivisionRepository) Create(ctx context.Context, subdivision models.Subdivision) (models.Subdivision, error) {
 	const query = `
-		INSERT INTO subdivisions (name, description)
-		VALUES ($1, $2)
+		INSERT INTO subdivisions (restaurant_id, name, description)
+		VALUES ($1, $2, $3)
 		RETURNING id, restaurant_id, name, description, is_active, created_at, updated_at
 	`
 
@@ -71,16 +72,17 @@ func (r *SubdivisionRepository) Create(ctx context.Context, subdivision models.S
 	err := r.db.QueryRow(
 		ctx,
 		query,
+		subdivision.RestaurantID,
 		subdivision.Name,
 		subdivision.Description,
 	).Scan(
-		&subdivision.ID,
-		&subdivision.RestaurantId,
-		&subdivision.Name,
-		&subdivision.Description,
-		&subdivision.IsActive,
-		&subdivision.CreatedAt,
-		&subdivision.UpdatedAt,
+		&created.ID,
+		&created.RestaurantID,
+		&created.Name,
+		&created.Description,
+		&created.IsActive,
+		&created.CreatedAt,
+		&created.UpdatedAt,
 	)
 
 	if err != nil {
