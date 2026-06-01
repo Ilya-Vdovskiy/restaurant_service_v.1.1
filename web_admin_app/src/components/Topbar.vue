@@ -6,8 +6,8 @@
       <span class="notification-dot"></span>
     </button>
     <button class="profile-button">
-      <span class="avatar small">АК</span>
-      <span>Администратор</span>
+      <span class="avatar small">РК</span>
+      <span>Руководитель</span>
       <ChevronDown :size="16" />
     </button>
   </header>

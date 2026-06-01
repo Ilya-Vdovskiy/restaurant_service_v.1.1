@@ -16,10 +16,10 @@
     </nav>
 
     <div class="sidebar-profile">
-      <div class="avatar">АК</div>
+      <div class="avatar">РК</div>
       <div>
-        <strong>Администратор</strong>
-        <small>admin@restaurant.local</small>
+        <strong>Руководитель</strong>
+        <small>manager@restaurant.local</small>
       </div>
     </div>
   </aside>

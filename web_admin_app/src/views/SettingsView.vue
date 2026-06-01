@@ -1,27 +1,59 @@
 <template>
   <section class="page">
-    <div class="page-title"><span>Настройки</span><h1>Параметры системы</h1><p>Роли, доступы, безопасность и профиль администратора.</p></div>
-    <div class="settings-grid">
-      <ChartCard title="Управление ролями">
-        <label v-for="role in roles" :key="role" class="setting-line"><span>{{ role }}</span><input type="checkbox" checked /></label>
-      </ChartCard>
-      <ChartCard title="Права доступа">
-        <label class="setting-line"><span>Создание курсов</span><input type="checkbox" checked /></label>
-        <label class="setting-line"><span>Просмотр аналитики</span><input type="checkbox" checked /></label>
-        <label class="setting-line"><span>Экспорт отчётов</span><input type="checkbox" /></label>
-      </ChartCard>
-      <ChartCard title="Настройки безопасности">
-        <label class="setting-line"><span>Двухфакторная авторизация</span><input type="checkbox" /></label>
-        <label class="setting-line"><span>Сессия 30 минут</span><input type="checkbox" checked /></label>
-      </ChartCard>
-      <ChartCard title="Профиль администратора">
-        <div class="profile-hero compact"><div class="avatar xl">АК</div><h3>Администратор курсов</h3><p>admin@restaurant.local</p></div>
-      </ChartCard>
+    <div class="page-title">
+      <span>Настройки</span>
+      <h1>Параметры системы</h1>
+      <p>Управление ролями, пользователями и сервисными параметрами руководителя.</p>
     </div>
+
+    <div class="settings-action-grid">
+      <button v-for="item in settingsTiles" :key="item.title" class="settings-action-card" :class="{ active: item.active }">
+        <component :is="item.icon" :size="30" />
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.text }}</p>
+      </button>
+    </div>
+
+    <section class="panel-list">
+      <div class="panel-list-head">
+        <div>
+          <h2>Управление ролями</h2>
+          <p>Роли определяют уровень доступа пользователей к системе.</p>
+        </div>
+        <button class="primary small">Создать роль</button>
+      </div>
+
+      <article v-for="role in roles" :key="role.name" class="role-row">
+        <div>
+          <div class="role-title-row">
+            <h3>{{ role.name }}</h3>
+            <span>{{ role.users }} пользователей</span>
+          </div>
+          <div class="permission-tags">
+            <span v-for="permission in role.permissions" :key="permission">{{ permission }}</span>
+          </div>
+        </div>
+        <button class="ghost small">Редактировать</button>
+      </article>
+    </section>
   </section>
 </template>
 
 <script setup>
-import ChartCard from '../components/ChartCard.vue';
-const roles = ['Администратор', 'Руководитель', 'Менеджер', 'Сотрудник'];
+import { Bell, Database, Globe, Shield, Users } from 'lucide-vue-next';
+
+const settingsTiles = [
+  { title: 'Роли и права', text: 'Управление ролями пользователей', icon: Shield, active: true },
+  { title: 'Пользователи', text: 'Управление учётными записями', icon: Users },
+  { title: 'Уведомления', text: 'Настройка уведомлений', icon: Bell },
+  { title: 'Локализация', text: 'Язык и региональные настройки', icon: Globe },
+  { title: 'Резервное копирование', text: 'Управление резервными копиями', icon: Database },
+];
+
+const roles = [
+  { name: 'Руководитель', users: 2, permissions: ['Отчёты', 'Аналитика', 'Управление обучением'] },
+  { name: 'Менеджер', users: 8, permissions: ['Курсы', 'Назначения', 'Просмотр отчётов'] },
+  { name: 'Инструктор', users: 5, permissions: ['Создание курсов', 'Создание тестов'] },
+  { name: 'Сотрудник', users: 232, permissions: ['Просмотр курсов', 'Прохождение тестов'] },
+];
 </script>
