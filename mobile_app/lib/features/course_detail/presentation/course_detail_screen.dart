@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_flutter_app/core/router/app_routes.dart';
 import 'package:mobile_flutter_app/core/theme/app_colors.dart';
@@ -31,7 +31,9 @@ class CourseDetailScreen extends StatelessWidget {
                   Container(
                     height: 150,
                     decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(18),
+                      ),
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -39,7 +41,11 @@ class CourseDetailScreen extends StatelessWidget {
                       ),
                     ),
                     child: const Center(
-                      child: Icon(Icons.wine_bar_outlined, color: AppColors.gold, size: 54),
+                      child: Icon(
+                        Icons.wine_bar_outlined,
+                        color: AppColors.gold,
+                        size: 54,
+                      ),
                     ),
                   ),
                   Padding(
@@ -47,7 +53,10 @@ class CourseDetailScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('12 материалов • 1 тест', style: Theme.of(context).textTheme.bodyMedium),
+                        Text(
+                          '12 материалов • 1 тест',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
                         const SizedBox(height: 12),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
@@ -55,11 +64,19 @@ class CourseDetailScreen extends StatelessWidget {
                             value: 0.4,
                             minHeight: 8,
                             backgroundColor: AppColors.surfaceLight,
-                            valueColor: AlwaysStoppedAnimation<Color>(AppColors.gold),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              AppColors.gold,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text('40% пройдено', style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.w700)),
+                        const Text(
+                          '40% пройдено',
+                          style: TextStyle(
+                            color: AppColors.gold,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -132,10 +149,15 @@ class _LessonTile extends StatelessWidget {
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: completed ? AppColors.gold.withOpacity(0.18) : AppColors.surfaceLight,
+              color: completed
+                  ? AppColors.gold.withValues(alpha: 0.18)
+                  : AppColors.surfaceLight,
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: completed ? AppColors.gold : AppColors.textTertiary),
+            child: Icon(
+              icon,
+              color: completed ? AppColors.gold : AppColors.textTertiary,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -148,7 +170,10 @@ class _LessonTile extends StatelessWidget {
               ],
             ),
           ),
-          Icon(completed ? Icons.check_circle : Icons.chevron_right, color: completed ? AppColors.gold : AppColors.textTertiary),
+          Icon(
+            completed ? Icons.check_circle : Icons.chevron_right,
+            color: completed ? AppColors.gold : AppColors.textTertiary,
+          ),
         ],
       ),
     );

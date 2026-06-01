@@ -11,6 +11,8 @@ type Config struct {
 	DatabaseURL     string
 	HTTPAddr        string
 	MigrationsPath  string
+	JWTSecret       string
+	CORSOrigins     string
 	ShutdownTimeout time.Duration
 }
 
@@ -25,6 +27,8 @@ func Load() (Config, error) {
 		DatabaseURL:     os.Getenv("DATABASE_URL"),
 		HTTPAddr:        ":" + port,
 		MigrationsPath:  getEnv("MIGRATIONS_PATH", "migrations"),
+		JWTSecret:       getEnv("JWT_SECRET", "dev-secret-change-me"),
+		CORSOrigins:     getEnv("CORS_ORIGINS", "*"),
 		ShutdownTimeout: time.Duration(shutdownTimeoutSeconds) * time.Second,
 	}
 

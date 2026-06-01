@@ -42,7 +42,7 @@ func run() error {
 
 	server := &http.Server{
 		Addr:    cfg.HTTPAddr,
-		Handler: router.New(db),
+		Handler: router.New(db, cfg.JWTSecret, cfg.CORSOrigins),
 	}
 
 	errCh := make(chan error, 1)

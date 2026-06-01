@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_flutter_app/core/router/app_routes.dart';
 import 'package:mobile_flutter_app/core/theme/app_colors.dart';
@@ -120,7 +120,9 @@ class _ContentTypeIcon extends StatelessWidget {
       width: 32,
       height: 32,
       decoration: BoxDecoration(
-        color: item.completed ? AppColors.gold.withOpacity(0.18) : AppColors.surfaceLight,
+        color: item.completed
+            ? AppColors.gold.withValues(alpha: 0.18)
+            : AppColors.surfaceLight,
         shape: BoxShape.circle,
       ),
       child: Icon(
@@ -148,7 +150,9 @@ class _CourseActionButton extends StatelessWidget {
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.gold,
           side: const BorderSide(color: AppColors.gold, width: 1.4),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -172,7 +176,7 @@ class _CompletedState extends StatelessWidget {
       width: double.infinity,
       height: 46,
       decoration: BoxDecoration(
-        color: const Color(0xFF22C55E).withOpacity(0.18),
+        color: const Color(0xFF22C55E).withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(24),
       ),
       child: const Row(

@@ -7,8 +7,10 @@ import AssignmentsView from '../views/AssignmentsView.vue';
 import AnalyticsView from '../views/AnalyticsView.vue';
 import ReportsView from '../views/ReportsView.vue';
 import SettingsView from '../views/SettingsView.vue';
+import LoginView from '../views/LoginView.vue';
 
 const routes = [
+  { path: '/login', name: 'login', component: LoginView, meta: { public: true, title: 'Вход' } },
   { path: '/', name: 'dashboard', component: DashboardView, meta: { title: 'Панель управления' } },
   { path: '/employees', name: 'employees', component: EmployeesView, meta: { title: 'Сотрудники' } },
   { path: '/training', name: 'training', component: TrainingView, meta: { title: 'Обучение' } },
@@ -19,7 +21,16 @@ const routes = [
   { path: '/settings', name: 'settings', component: SettingsView, meta: { title: 'Настройки' } },
 ];
 
-export default createRouter({
+const router = createRouter({
   history: createWebHistory(),
   routes,
 });
+
+router.beforeEach((to) => {
+  const token = localStorage.getItem('auth_token');
+  if (!to.meta.public && !token) return '/login';
+  if (to.name === 'login' && token) return '/';
+  return true;
+});
+
+export default router;

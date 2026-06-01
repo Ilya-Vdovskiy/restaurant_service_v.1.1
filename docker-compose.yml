@@ -1,0 +1,57 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: restaurant_service_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-resto_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-resto_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-resto_lms}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-resto_user} -d ${POSTGRES_DB:-resto_lms}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    container_name: restaurant_service_backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-resto_user}:${POSTGRES_PASSWORD:-resto_secret}@postgres:5432/${POSTGRES_DB:-resto_lms}?sslmode=disable
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      SERVER_PORT: 8080
+      SHUTDOWN_TIMEOUT_SECONDS: 10
+      MIGRATIONS_PATH: /app/migrations
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8088,http://localhost:5173}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  web:
+    build:
+      context: ./web_admin_app
+      args:
+        VITE_API_BASE_URL: /api
+    container_name: restaurant_service_web
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_started
+    ports:
+      - "${WEB_PORT:-8088}:80"
+
+volumes:
+  postgres_data:
